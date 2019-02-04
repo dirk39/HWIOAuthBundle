@@ -26,9 +26,9 @@ class KeycloakResourceOwner extends GenericOAuth2ResourceOwner
 
     public function getAuthorizationUrl($redirectUri, array $extraParameters = array())
     {
-        return parent::getAuthorizationUrl($redirectUri, array_merge([
+        return parent::getAuthorizationUrl($redirectUri, array_merge(array(
           'approval_prompt' => $this->getOption('approval_prompt')
-        ],$extraParameters));
+        ),$extraParameters));
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -36,9 +36,9 @@ class KeycloakResourceOwner extends GenericOAuth2ResourceOwner
         parent::configureOptions($resolver);
 
         $resolver
-          ->setDefined(['protocol', 'response_type', 'approval_prompt'])
-          ->setRequired(['realms', 'base_url'])
-          ->setDefaults([
+          ->setDefined(array('protocol', 'response_type', 'approval_prompt'))
+          ->setRequired(array('realm', 'base_url'))
+          ->setDefaults(array(
             'protocol' => 'openid-connect',
             'scope' =>  'name,email',
             'response_type' => 'code',
@@ -46,17 +46,15 @@ class KeycloakResourceOwner extends GenericOAuth2ResourceOwner
             //we configure the urls later (if user don't set them)
             'authorization_url' => 'authorization_url',
             'infos_url' => 'infos_url',
-            'access_token_url' => 'access_token_url',
-          ]);
+            'access_token_url' => 'access_token_url',));
     }
 
     protected function prepareBaseUrls()
     {
-        $urls = [
+        $urls = array(
           'authorization_url' => 'auth',
           'infos_url' => 'userinfo',
-          'access_token_url' => 'token'
-        ];
+          'access_token_url' => 'token');
 
         foreach ($urls as $urlType => $suffix) {
             $this->buildUrl($urlType, $suffix);
@@ -71,7 +69,7 @@ class KeycloakResourceOwner extends GenericOAuth2ResourceOwner
             return;
         }
 
-        $url = trim($this->getOption('base_url'), '/').'/auth/realms/' . $this->getOption('realms');
+        $url = trim($this->getOption('base_url'), '/').'/auth/realms/' . $this->getOption('realm');
         $url .= '/protocol/' . $this->getOption('protocol');
 
         $this->options[$urlType] = $url . '/'.$suffix;

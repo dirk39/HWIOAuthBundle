@@ -11,7 +11,7 @@ class KeycloakResourceOwnerTest extends GenericOAuth2ResourceOwnerTest
     protected $options = array(
       'client_id' => 'clientid',
       'client_secret' => 'clientsecret',
-      'realms' => 'example',
+      'realm' => 'example',
       'base_url' => 'http://keycloak.local',
 
       'attr_name' => 'access_token',
@@ -45,20 +45,23 @@ json;
       'infos_url' => 'http://keycloak.local/auth/realms/example/protocol/openid-connect/userinfo'
     );
 
-    protected $resourceOwnerClass = KeycloakResourceOwner::class;
-
     public function testUrlsAlreadySet()
     {
-        $urls = [
+        $urls = array(
           'authorization_url' => 'http://keycloak.local/auth/realms/example/auth',
           'access_token_url' => 'http://keycloak.local/auth/realms/example/token',
           'infos_url' => 'http://keycloak.local/auth/realms/example/userinfo'
-        ];
+        );
 
-        $resourceOwner = $this->createResourceOwner($this->resourceOwnerClass,$urls);
+        $resourceOwner = $this->createResourceOwner($this->resourceOwnerName,$urls);
 
         $this->assertEquals($urls['authorization_url'], $resourceOwner->getOption('authorization_url'));
         $this->assertEquals($urls['access_token_url'], $resourceOwner->getOption('access_token_url'));
         $this->assertEquals($urls['infos_url'], $resourceOwner->getOption('infos_url'));
+    }
+
+    protected function setUpResourceOwner($name, $httpUtils, array $options)
+    {
+        return new KeycloakResourceOwner($this->buzzClient, $httpUtils, $options, $this->resourceOwnerName, $this->storage);
     }
 }
